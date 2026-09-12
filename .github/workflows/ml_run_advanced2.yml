@@ -1,0 +1,66 @@
+name: Advanced-2 ML Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  training:
+    name: "Stage 1: Training"
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install scikit-learn pandas numpy
+      
+      - name: Run training script
+        run: python scripts/train_model.py
+
+  evaluation:
+    name: "Stage 2: Evaluation"
+    needs: training
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install scikit-learn numpy
+      
+      - name: Run evaluation script
+        run: python scripts/evaluate_model.py
+
+  deployment:
+    name: "Stage 3: Deployment"
+    needs: evaluation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Run deployment script
+        run: python scripts/deploy_model.py
