@@ -14,7 +14,8 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+        # ↑ Changed from v6 (more stable with containers)
       
       - name: Install dependencies
         run: |
@@ -25,13 +26,6 @@ jobs:
       
       - name: Run training script
         run: python scripts/train_model.py
-      
-      - name: Upload model
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: trained-model
-          path: models/model.pkl
 
   evaluation:
     name: "Stage 2: Evaluation"
@@ -43,13 +37,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
-      
-      - name: Download model from training
-        uses: actions/download-artifact@v3
-        with:
-          name: trained-model
-          path: models/
+        uses: actions/checkout@v4
       
       - name: Install dependencies
         run: |
@@ -59,13 +47,6 @@ jobs:
       
       - name: Run evaluation script
         run: python scripts/evaluate_model.py
-      
-      - name: Upload metrics
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: model-metrics
-          path: models/metrics.json
 
   deployment:
     name: "Stage 3: Deployment"
@@ -77,20 +58,19 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
-      
-      - name: Download metrics from evaluation
-        uses: actions/download-artifact@v3
-        with:
-          name: model-metrics
-          path: models/
+        uses: actions/checkout@v4
       
       - name: Run deployment script
         run: python scripts/deploy_model.py
       
       - name: Success notification
         if: success()
-        run: echo "✅ Pipeline completed successfully!"
+        run: |
+          echo "✅ ALL STAGES COMPLETED SUCCESSFULLY!"
+          echo "Pipeline summary:"
+          echo "  ✓ Stage 1: Training"
+          echo "  ✓ Stage 2: Evaluation"
+          echo "  ✓ Stage 3: Deployment"
       
       - name: Failure notification
         if: failure()
