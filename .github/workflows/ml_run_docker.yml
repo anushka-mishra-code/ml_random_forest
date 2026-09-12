@@ -1,0 +1,19 @@
+name: ML Run on Docker
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  ml_run:
+    runs-on: ubuntu-latest
+    
+    container:
+      image: jupyter/scipy-notebook:latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      
+      - name: Run ML script
+        run: python ml_example.py
